@@ -21,7 +21,7 @@ def backproject(depth, intrinsic_matrix):
 
     for v in range(H):
         for u in range(W):
-            if depth[v, u] > 0:                                                       # Depth value at pixel (u, v)
+            if depth[v, u] > 0:                                                       # Check valid depth value at pixel (u, v)
                 homogeneous_coord = np.array([u, v, 1])
                 X = depth[v, u] * np.dot(inv_intrinsic_matrix, homogeneous_coord)     # applying the formula (X = dK^-1x)
                 pcloud[v, u] = X                                                      # store the 3D point at the corresponding pixel location
