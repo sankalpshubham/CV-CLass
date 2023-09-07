@@ -1,6 +1,9 @@
 """
 CS 4391 Homework 1 Programming
 Backprojection
+
+Name: Sankalp Shubham
+id: sxs190290
 """
 
 import cv2
