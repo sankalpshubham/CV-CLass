@@ -15,13 +15,13 @@ import matplotlib.pyplot as plt
 # output: a point cloud, pcloud with shape (H, W, 3)
 #TODO: implement this function: for each 2D coordinate x, its 3D location X = dK^-1x (x is a homogeneous coordinate, d is its depth value, K is the intrinsic matrix). See slide 26 in lecture 3.
 def backproject(depth, intrinsic_matrix):
-    H, W = depth.shape                                      # extract height and width
+    H, W = depth.shape                                      # extract the (shape) height and width
     pcloud = np.zeros((H, W, 3), dtype=np.float32)          # intialize array of zeroes with shape (H, W, 3) that stores 3D coordinates
     inv_intrinsic_matrix = np.linalg.inv(intrinsic_matrix)  # calculate the inverse of the intrinsic matrix
 
     for v in range(H):
         for u in range(W):
-            if depth[v, u] > 0:                                                       # Check valid depth value at pixel (u, v)
+            if depth[v, u] > 0:                                                       # Check valid depth value at pixel (v, u)
                 homogeneous_coord = np.array([u, v, 1])
                 X = depth[v, u] * np.dot(inv_intrinsic_matrix, homogeneous_coord)     # applying the formula (X = dK^-1x)
                 pcloud[v, u] = X                                                      # store the 3D point at the corresponding pixel location
