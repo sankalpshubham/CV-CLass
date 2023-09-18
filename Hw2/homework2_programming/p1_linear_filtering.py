@@ -18,6 +18,7 @@ def linear_local_filtering(img: np.uint8, filter_weights: np.ndarray,) -> np.uin
     img_filtered = np.zeros(img.shape) # Placeholder of the filtered image
     kernel_size = filter_weights.shape[0] # filter kernel size
     sizeX, sizeY = img.shape
+    center = kernel_size // 2
 
     # filtering for each pixel
     for i in range(kernel_size // 2, sizeX - kernel_size // 2):
@@ -29,7 +30,7 @@ def linear_local_filtering(img: np.uint8, filter_weights: np.ndarray,) -> np.uin
 
             # ********************************
             # Compute the filtered pixel value using the kernel weights and neighboring pixels
-            img_patch = img[i - kernel_size // 2 : i + kernel_size // 2 + 1, j - kernel_size // 2 : j + kernel_size // 2 + 1]
+            img_patch = img[i - center:i + center + 1, j - center: j + center + 1]
             img_filtered[i, j] = np.sum(filter_weights * img_patch)
             # ********************************
 

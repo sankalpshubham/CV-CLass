@@ -24,58 +24,18 @@ def bilateral_filtering(img: np.uint8, spatial_variance: float, intensity_varian
     # Tip: use zero-padding to address the black border issue.
 
     # ********************************
+    # ______________________________________________________________________________________________________________________________
 
-    # MINE ___________________________________________________________________________________________________________________________________
-    # Your code is here.
-    # sizeX, sizeY = img.shape
-    # center = kernel_size // 2
-    # padding_size = center       # Define a padding size based on the kernel size to handle borders
-    # spacial_weights, intensity_range_weights = np.zeros((kernel_size, kernel_size)), np.zeros((kernel_size, kernel_size))
-
-    # # Create a padded version of the input image
-    # img_padded = np.pad(img, ((padding_size, padding_size), (padding_size, padding_size)), mode='constant')
-
-    # # Calculate the center of the kernel
-    
-    # # Compute the spacial and intensity range weights
-    # for i in range(kernel_size):
-    #     for j in range(kernel_size):
-    #         k, l = i - center, j - center
-    #         spacial_weights[i, j] = (1 / (2 * math.pi * spatial_variance)) * math.exp(-(k ** 2 + l ** 2) / (2 * spatial_variance))
-    #         intensity_range_weights[i, j] = (1 / math.sqrt(2 * math.pi * intensity_variance)) * math.exp(-(k ** 2) / (2 * intensity_variance))
-
-    
-    # # filtering for each pixel
-    # for i in range(kernel_size // 2, sizeX - kernel_size // 2):
-    #     for j in range(kernel_size // 2, sizeY - kernel_size // 2):
-    #         # Compute the filtered pixel value using the kernel weights and neighboring pixels
-    #         img_patch = img[i - kernel_size // 2 : i + kernel_size // 2 + 1, j - kernel_size // 2 : j + kernel_size // 2 + 1]
-    #         img_filtered[i, j] = (1 / np.sum(spacial_weights * intensity_range_weights)) * np.sum(spacial_weights * intensity_range_weights * img_patch)
-
-    #___________________________________________________________________________________________________________________________________
-
-    # ********************************
-
-
-    # GOOGLE ___________________________________________________________________________________________________________________________________
-    # # Create a padded image to handle the black border issue
-    # padded_img = np.pad(img, ((kernel_size - 1, kernel_size - 1), (kernel_size - 1, kernel_size - 1)), mode='constant', constant_values=0)
-
-    # # Compute the spatial and intensity range weights of the bilateral filter
-    # spatial_weights = np.exp(-((padded_img[:, :, None] - padded_img[None, :, :]) ** 2) / (2 * spatial_variance))
-    # intensity_weights = np.exp(-((padded_img[:, :, None] - padded_img[None, :, :]) ** 2) / (2 * intensity_variance))
-
-    # # Compute the filtered output for each pixel
-    # for i in range(img.shape[0]):
-    #     for j in range(img.shape[1]):
-    #         kernel = spatial_weights[i : i + kernel_size, j : j + kernel_size] * intensity_weights[i : i + kernel_size, j : j + kernel_size]
-    #         kernel = kernel / np.sum(kernel)
-    #         img_filtered[i, j] = np.sum(kernel * padded_img[i : i + kernel_size, j : j + kernel_size])
-    #___________________________________________________________________________________________________________________________________
     sizeX, sizeY = img.shape
 
     # Define a padding size based on the kernel size to handle borders
     padding_size = kernel_size // 2
+
+    # Precompute spatial weights (depends only on spatial_variance)
+    spatial_weights = np.zeros((kernel_size, kernel_size))
+    for k in range(-padding_size, padding_size + 1):
+        for l in range(-padding_size, padding_size + 1):
+            spatial_weights[k + padding_size, l + padding_size] = math.exp(-(k ** 2 + l ** 2) / (2 * spatial_variance))
 
     # Create a padded version of the input image
     img_padded = np.pad(img, ((padding_size, padding_size), (padding_size, padding_size)), mode='constant')
@@ -89,22 +49,20 @@ def bilateral_filtering(img: np.uint8, spatial_variance: float, intensity_varian
             weighted_sum = 0.0
             sum_of_weights = 0.0
 
-            # Compute spatial and intensity weights
+            # Compute intensity weight (depends on intensity_variance)
             for x in range(i - padding_size, i + padding_size + 1):
                 for y in range(j - padding_size, j + padding_size + 1):
                     # Neighboring pixel coordinates
                     neighbor_pixel = img_padded[x, y]
 
-                    # Compute spatial and intensity differences
-                    spatial_difference = np.sqrt((i - x) ** 2 + (j - y) ** 2)
+                    # Compute intensity difference
                     intensity_difference = np.abs(current_pixel - neighbor_pixel)
 
-                    # Compute spatial and intensity weights using your original formulas
-                    spatial_weight = (1 / (2 * math.pi * spatial_variance)) * math.exp(-(spatial_difference ** 2) / (2 * spatial_variance))
+                    # Compute intensity weight using your original formula
                     intensity_weight = (1 / math.sqrt(2 * math.pi * intensity_variance)) * math.exp(-(intensity_difference ** 2) / (2 * intensity_variance))
 
-                    # Bilateral filter weight
-                    bilateral_weight = spatial_weight * intensity_weight
+                    # Bilateral filter weight (combined with spatial weight)
+                    bilateral_weight = spatial_weights[x - i + padding_size, y - j + padding_size] * intensity_weight
 
                     # Update the weighted sum and sum of weights
                     weighted_sum += neighbor_pixel * bilateral_weight
@@ -113,6 +71,7 @@ def bilateral_filtering(img: np.uint8, spatial_variance: float, intensity_varian
             # Compute the filtered pixel value
             img_filtered[i - padding_size, j - padding_size] = weighted_sum / sum_of_weights
 
+    # ______________________________________________________________________________________________________________________________
 
 
     img_filtered = img_filtered * 255
