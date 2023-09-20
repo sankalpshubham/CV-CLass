@@ -35,30 +35,29 @@ def bilateral_filtering(img: np.uint8, spatial_variance: float, intensity_varian
 
     # Precompute spatial weights (depends only on spatial_variance)
     spatial_weights = np.zeros((kernel_size, kernel_size))
-    # for k in range(-padding_size, padding_size + 1):
-    #     for l in range(-padding_size, padding_size + 1):
-    #         spatial_weights[k + padding_size, l + padding_size] = math.exp(-(k ** 2 + l ** 2) / (2 * spatial_variance))
-    for i in range(kernel_size):
-        for j in range(kernel_size):
-            k, l = i - padding_size, j - padding_size
-            spatial_weights[i, j] = math.exp(-(k ** 2 + l ** 2) / (2 * spatial_variance))
+    for k in range(-padding_size, padding_size + 1):
+        for l in range(-padding_size, padding_size + 1):
+            spatial_weights[k + padding_size, l + padding_size] = math.exp(-(k ** 2 + l ** 2) / (2 * spatial_variance))
 
     for i in range(padding_size, sizeX + padding_size):
         for j in range(padding_size, sizeY + padding_size):
             current_pixel = img_padded[i, j]
+            neighbor_pixel = img_padded[i - padding_size:i + padding_size + 1, j - padding_size:j + padding_size + 1]
 
             # Compute intensity weight (depends on intensity_variance)
-            intensity_difference = np.abs(current_pixel - img_padded[i - padding_size:i + padding_size + 1, j - padding_size:j + padding_size + 1])
-            intensity_weight = (1 / np.sqrt(2 * np.pi * intensity_variance)) * np.exp(-(intensity_difference ** 2) / (2 * intensity_variance))
+            intensity_difference = np.abs(current_pixel - neighbor_pixel)
+            intensity_weight = np.exp(-(intensity_difference ** 2) / (2 * intensity_variance))
 
             # Bilateral filter weight (combined with spatial weight)
             bilateral_weight = spatial_weights * intensity_weight
-            weighted_sum = np.sum(bilateral_weight * img_padded[i - padding_size:i + padding_size + 1, j - padding_size:j + padding_size + 1])
+            weighted_sum = np.sum(bilateral_weight * neighbor_pixel)
 
             sum_of_weights = np.sum(bilateral_weight)
 
             # Compute the filtered pixel value
             img_filtered[i - padding_size, j - padding_size] = weighted_sum / sum_of_weights
+
+
 
     img_filtered = img_filtered * 255
     img_filtered = np.uint8(img_filtered)
