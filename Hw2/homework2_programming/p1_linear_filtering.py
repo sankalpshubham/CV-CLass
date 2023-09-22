@@ -1,4 +1,5 @@
 """
+Sankalp Shubham: sxs190290
 CS 4391 Homework 2 Programming: Part 1&2 - mean and gaussian filters
 Implement the linear_local_filtering() and gauss_kernel_generator() functions in this python script
 """
@@ -18,6 +19,7 @@ def linear_local_filtering(img: np.uint8, filter_weights: np.ndarray,) -> np.uin
     img_filtered = np.zeros(img.shape) # Placeholder of the filtered image
     kernel_size = filter_weights.shape[0] # filter kernel size
     sizeX, sizeY = img.shape
+    # get center instead of constantly computing kernel_size // 2 to reduce computations
     center = kernel_size // 2
 
     # filtering for each pixel
@@ -47,15 +49,14 @@ def gauss_kernel_generator(kernel_size: int, spatial_variance: float) -> np.ndar
     # Todo: given variance: spatial_variance and kernel size, you need to create a kernel_sizexkernel_size gaussian kernel
     # Please check out the formula in slide 15 of lecture 6 to learn how to compute the gaussian kernel weight: g[k, l] at each position [k, l].
     kernel_weights = np.zeros((kernel_size, kernel_size))
-
-    # Calculate the center of the kernel
+    # get the center of the kernel
     center = kernel_size // 2
     
-    # Compute the Gaussian kernel
+    # compute the Gaussian kernel
     for i in range(kernel_size):
         for j in range(kernel_size):
             k, l = i - center, j - center
-            kernel_weights[i, j] = (1 / (2 * math.pi * spatial_variance)) * math.exp(-(k ** 2 + l ** 2) / (2 * spatial_variance))
+            kernel_weights[i, j] = math.exp(-(k ** 2 + l ** 2) / (2 * spatial_variance))
 
     return kernel_weights
  
