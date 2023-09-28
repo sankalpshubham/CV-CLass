@@ -1,4 +1,5 @@
 """
+Sankalp Shubham: sxs190290
 CS 4391 Homework 3 Programming
 Implement sift_matching() function in this python script
 SIFT feature matching
@@ -15,19 +16,19 @@ import matplotlib.pyplot as plt
 # for example, if the 10th element in index is 100, that means des1[10, :] matches to des2[100, :]
 # idea: for each descriptor in des1, find its matching by computing L2 distance with all the descriptors in des2; the best matching corresponds to the smallest L2 distance
 def sift_matching(des1, des2):
+    # get the dimension of the descriptors and initalize the index
     m, n = des1.shape[0], des2.shape[0]
     index = np.zeros(m, dtype=int)
-
-    for i in range(m):
-        min_distance = float('inf')
-        best_match = -1
-        for j in range(n):
+    
+    for i in range(m):                  # iterate over all the values in des1
+        min_distance = float('inf')     # initialize big min distance and random match
+        match = -1
+        for j in range(n):              # calculate the L2 distance and store it as the min distance with match if lower than current min distance
             distance = np.linalg.norm(des1[i] - des2[j])
             if distance < min_distance:
-                min_distance = distance
-                best_match = j
-        index[i] = best_match
-
+                min_distance, match = distance, j
+        index[i] = match                # once done iterating over all, store the final match
+    
     return index
 
 # main function

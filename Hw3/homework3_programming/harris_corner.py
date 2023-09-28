@@ -1,4 +1,5 @@
 """
+Sankalp Shubham: sxs190290
 CS 4391 Homework 3 Programming
 Implement the harris_corner() function and the non_maximum_suppression() function in this python script
 Harris corner detector
@@ -7,7 +8,6 @@ Harris corner detector
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 
 
 #TODO: implement this function
@@ -16,18 +16,18 @@ import math
 # idea: for each pixel, check its 8 neighborhoods in the image. If the pixel is the maximum compared to these
 # 8 neighborhoods, mark it as a corner with value 1. Otherwise, mark it as non-corner with value 0
 def non_maximum_suppression(R):
+    # get the shape of R and create mask
     xSize, ySize = R.shape
     mask = np.zeros(R.shape)
-    R_padded = np.pad(R, ((3, 3), (3, 3)), mode='constant')
-
-    for i in range(3, xSize + 3):
-        for j in range(3, ySize + 3):
-            neighborhood = R_padded[i - 3:i + 4, j - 3:j + 4]
-            if R[i - 3, j - 3] >= np.max(neighborhood) and np.max(neighborhood) != 0:
-                mask[i - 3, j - 3] = 1
-
+    R_padded = np.pad(R, ((1, 1), (1, 1)), mode='constant') # Add a padding of 1 to consider 8 neighbors
+    
+    for i in range(1, xSize + 1):                           # Include the edge pixels with padding
+        for j in range(1, ySize + 1):                       
+            neighborhood = R_padded[i-1:i+2, j-1:j+2]       # Extract the 8 surrounding pixels
+            if R[i-1, j-1] >= np.max(neighborhood) and np.max(neighborhood) != 0:   # check that the pixel is bigger than max and not 0
+                mask[i-1, j-1] = 1                          # mark for edge
+    
     return mask
-
 
 #TODO: implement this function
 # input: im is an RGB image with shape [height, width, 3]
