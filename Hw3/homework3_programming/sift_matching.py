@@ -28,7 +28,7 @@ def sift_matching(des1, des2):
             if distance < min_distance:
                 min_distance, match = distance, j
         index[i] = match                # once done iterating over all, store the final match
-    
+        
     return index
 
 # main function
