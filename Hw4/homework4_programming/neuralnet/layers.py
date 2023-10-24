@@ -109,10 +109,10 @@ def relu_backward(grad_out, cache):
     #grad_x = np.where(cache > 0, grad_out, 0)  # Derivative of ReLU: 1 if x > 0, 0 otherwise
     # _________________________________________________
     
-    #grad_x = grad_out * (x > 0).astype('float')
-    out = np.maximum(0, x) # ReLU performed again
-    out[out > 0 ] = 1
-    grad_x = out * grad_out
+    grad_x = grad_out * (x > 0).astype('float')
+    # out = np.maximum(0, x) # ReLU performed again
+    # out[out > 0 ] = 1
+    # grad_x = out * grad_out
 
 
     ###########################################################################
