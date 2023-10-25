@@ -112,23 +112,23 @@ def training_step(model, X_batch, y_batch, reg):
     # ###########################################################################
     # # TODO: Compute the loss and gradient for one training iteration.         #
     # ###########################################################################
-    
+
     # Forward pass
     scores, cache = model.forward(X_batch)
 
     # Compute data loss
-    data_loss = softmax_loss(scores, y_batch)
-
-    # Compute L2 regularization loss
-    reg_loss1, _ = l2_regularization(model.W1, reg)
-    reg_loss2, _ = l2_regularization(model.W2, reg)
-    reg_loss = reg_loss1 + reg_loss2
-
-    # Compute total loss
-    loss = data_loss[0] + np.mean(reg_loss)
+    lc_loss,lc_grads = softmax_loss(scores, y_batch)
 
     # Backward pass
-    grads = model.backward(loss, cache)
+    grads = model.backward(lc_grads, cache)
+    
+    # Compute L2 regularization loss
+    reg_loss1, g1 = l2_regularization(model.W1, reg)
+    reg_loss2, g2 = l2_regularization(model.W2, reg)
+
+    loss = lc_loss+reg_loss1+reg_loss2
+    grads["W1"] += reg_loss1
+    grads["W2"] += reg_loss2
 
     # ###########################################################################
     # #                             END OF YOUR CODE                            #
