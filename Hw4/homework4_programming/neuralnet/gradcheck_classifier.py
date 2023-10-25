@@ -38,7 +38,6 @@ def gradcheck_linear_classifier():
 
     gradcheck_classifier(model, X, grad_scores)
 
-
 def gradcheck_two_layer_net():
     print('Running numeric gradient check for TwoLayerNet')
     N, D, C, H = 3, 4, 5, 6

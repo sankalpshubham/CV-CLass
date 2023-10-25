@@ -47,7 +47,7 @@ class TwoLayerNet(Classifier):
             'W1': self.W1,
             'b1': self.b1,
             'W2': self.W2,
-            'b2': self.b1
+            'b2': self.b2
         }
 
         #######################################################################
@@ -90,8 +90,8 @@ class TwoLayerNet(Classifier):
         dX, dW1, db1 = fc_backward(d_hidden_layer, hidden_cache)
 
         # Accumulate gradients for biases (b2 should be updated with db2)
-        db2 = np.sum(db2, axis=0)
-        db1 = np.sum(db1, axis=0)
+        # db2 = np.sum(db2, axis=0)
+        # db1 = np.sum(db1, axis=0)
 
         grads = {
             'W1': dW1,
