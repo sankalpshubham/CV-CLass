@@ -205,17 +205,16 @@ def l2_regularization(w, reg):
     # TODO: Implement L2 regularization.                                      #
     ###########################################################################
 
-    # # Compute the squared norm of w
-    # sqr_norm = np.square(w).sum()
-    # # Compute the loss using the formula given above
-    # loss = (reg/2)*sqr_norm
+    # Compute the squared norm of w
+    sqr_norm = np.square(w).sum()
+    # Compute the loss using the formula given above
+    loss = (reg/2)*sqr_norm
 
-    loss = (reg/2) * np.sum(w ** 2)
+    #loss = (reg/2) * np.sum(w ** 2)
 
     # Compute the gradient of the loss with respect to w
     grad_w = reg * w
-
-
+    
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################

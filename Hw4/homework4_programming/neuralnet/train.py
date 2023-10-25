@@ -108,13 +108,32 @@ def training_step(model, X_batch, y_batch, reg):
       parameters of the model. In particular grads[k] should be the gradient
       of the loss with respect to model.parameters()[k].
     """
-    loss, grads = None, None
-    ###########################################################################
-    # TODO: Compute the loss and gradient for one training iteration.         #
-    ###########################################################################
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
+    # loss, grads = None, None
+    # ###########################################################################
+    # # TODO: Compute the loss and gradient for one training iteration.         #
+    # ###########################################################################
+    
+    # Forward pass
+    scores, cache = model.forward(X_batch)
+
+    # Compute data loss
+    data_loss = softmax_loss(scores, y_batch)
+
+    # Compute L2 regularization loss
+    reg_loss1, _ = l2_regularization(model.W1, reg)
+    reg_loss2, _ = l2_regularization(model.W2, reg)
+    reg_loss = reg_loss1 + reg_loss2
+
+    # Compute total loss
+    loss = data_loss[0] + np.mean(reg_loss)
+
+    # Backward pass
+    grads = model.backward(loss, cache)
+
+    # ###########################################################################
+    # #                             END OF YOUR CODE                            #
+    # ###########################################################################
+    
     return loss, grads
 
 

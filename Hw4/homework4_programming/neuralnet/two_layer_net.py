@@ -38,7 +38,7 @@ class TwoLayerNet(Classifier):
         #######################################################################
 
     def parameters(self):
-        params = None
+        #params = None
         #######################################################################
         # TODO: Build a dict of all learnable parameters of this model.       #
         #######################################################################
