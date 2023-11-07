@@ -38,7 +38,6 @@ class TwoLayerNet(Classifier):
         #######################################################################
 
     def parameters(self):
-        #params = None
         #######################################################################
         # TODO: Build a dict of all learnable parameters of this model.       #
         #######################################################################
@@ -63,6 +62,7 @@ class TwoLayerNet(Classifier):
         # during the backward pass.                                           #
         #######################################################################
 
+        # apply forward for first and second layer
         hidden_layer, hidden_cache = fc_forward(X, self.W1, self.b1)
         hidden_layer_relu, relu_cache = relu_forward(hidden_layer)
 
@@ -85,14 +85,12 @@ class TwoLayerNet(Classifier):
 
         hidden_cache, relu_cache, scores_cache = cache
     
+        # apply backward for first and second layer
         d_hidden_layer_relu, dW2, db2 = fc_backward(grad_scores, scores_cache)
         d_hidden_layer = relu_backward(d_hidden_layer_relu, relu_cache)
         dX, dW1, db1 = fc_backward(d_hidden_layer, hidden_cache)
 
-        # Accumulate gradients for biases (b2 should be updated with db2)
-        # db2 = np.sum(db2, axis=0)
-        # db1 = np.sum(db1, axis=0)
-
+        # store gradients in dict
         grads = {
             'W1': dW1,
             'b1': db1,

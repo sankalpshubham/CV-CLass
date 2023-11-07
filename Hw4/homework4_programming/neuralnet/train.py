@@ -27,22 +27,23 @@ parser.add_argument(
 
 
 def main(args):
-    # How much data to use for training
-    num_train = 20000
-
-    # Model architecture hyperparameters.
-    hidden_dim = 16
-
-    # Optimization hyperparameters.
-    batch_size = 128
-    num_epochs = 10
-    learning_rate = 1e-4
-    reg = 1.0
-
     ###########################################################################
     # TODO: Set hyperparameters for training your model. You can change any   #
     # of the hyperparameters above.                                           #
     ###########################################################################
+
+    # How much data to use for training
+    num_train = 40000
+
+    # Model architecture hyperparameters.
+    hidden_dim = 15
+
+    # Optimization hyperparameters.
+    batch_size = 200
+    num_epochs = 50
+    learning_rate = 0.02
+    reg = 0.00001
+
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
@@ -108,21 +109,20 @@ def training_step(model, X_batch, y_batch, reg):
       parameters of the model. In particular grads[k] should be the gradient
       of the loss with respect to model.parameters()[k].
     """
-    # loss, grads = None, None
     # ###########################################################################
     # # TODO: Compute the loss and gradient for one training iteration.         #
     # ###########################################################################
 
-    # Forward pass
+    # forward pass
     scores, cache = model.forward(X_batch)
 
-    # Compute data loss
+    # compute data loss
     lc_loss,lc_grads = softmax_loss(scores, y_batch)
 
-    # Backward pass
+    # backward pass
     grads = model.backward(lc_grads, cache)
     
-    # Compute L2 regularization loss
+    # compute L2 regularization loss
     reg_loss1, g1 = l2_regularization(model.W1, reg)
     reg_loss2, g2 = l2_regularization(model.W2, reg)
 

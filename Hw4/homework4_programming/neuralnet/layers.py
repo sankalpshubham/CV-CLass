@@ -17,7 +17,6 @@ def fc_forward(x, w, b):
     - out: output, of shape (N, Dout)
     - cache: (x, w, b)
     """
-    #out = None
     ###########################################################################
     # TODO: Implement the forward pass. Store the result in out.              #
     ###########################################################################
@@ -48,14 +47,13 @@ def fc_backward(grad_out, cache):
     - grad_b: A numpy array of shape (Dout,) of gradient with respect to b
     """
     x, w, b = cache
-    #grad_x, grad_w, grad_b = None, None, None
     ###########################################################################
     # TODO: Implement the backward pass for the fully-connected layer         #
     ###########################################################################
     
-    grad_x = np.dot(grad_out, w.T)  # Gradient of loss function with respect to input is dot
-    grad_w = np.dot(x.T, grad_out)  # Gradient of loss function with respect to weights is dot
-    grad_b = np.sum(grad_out, axis=0)  # Sum along dimension 0 gives gradient with respect to bi
+    grad_x = np.dot(grad_out, w.T)  # gradient of loss function with respect to input
+    grad_w = np.dot(x.T, grad_out)  # gradient of loss function with respect to weights
+    grad_b = np.sum(grad_out, axis=0)  # sum along dimension 0 for gradient with respect to b
 
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -74,7 +72,6 @@ def relu_forward(x):
     - out: A numpy array of outputs, of the same shape as x
     - cache: x
     """
-    #out = None
     ###########################################################################
     # TODO: Implement the ReLU forward pass.                                  #
     ###########################################################################
@@ -99,21 +96,12 @@ def relu_backward(grad_out, cache):
     Returns:
     - grad_x: Gradient with respect to x
     """
-    #grad_x, x = None, cache
     x = cache
     ###########################################################################
     # TODO: Implement the ReLU backward pass.                                 #
     ###########################################################################
     
-    # _________________________________________________
-    #grad_x = np.where(cache > 0, grad_out, 0)  # Derivative of ReLU: 1 if x > 0, 0 otherwise
-    # _________________________________________________
-    
     grad_x = grad_out * (x > 0).astype('float')
-    # out = np.maximum(0, x) # ReLU performed again
-    # out[out > 0 ] = 1
-    # grad_x = out * grad_out
-
 
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -158,27 +146,23 @@ def softmax_loss(x, y):
     - grad_x: Numpy array of shape (N, C) giving the gradient of the loss with
       with respect to x
     """
-    #loss, grad_x = None, None
     ###########################################################################
     # TODO: Implement softmax loss                                            #
     ###########################################################################
-    
-    N = x.shape[0]
+    n = x.shape[0]
 
-    # Compute the max score for each sample in x
+    # compute the max score for each sample in x and softmax probabilities for shifted logit scores
     max_scores = np.max(x, axis=1, keepdims=True)
-
-    # Compute softmax probabilities for shifted logit scores
     exp_shifted_logits = np.exp(x - max_scores)
     softmax_probs = exp_shifted_logits / np.sum(exp_shifted_logits, axis=1, keepdims=True)
 
-    # Compute the loss using the negative log likelihood
-    loss = -np.sum(np.log(softmax_probs[np.arange(N), y])) / N
+    # compute the loss using the negative log likelihood
+    loss = -np.sum(np.log(softmax_probs[np.arange(n), y])) / n
 
-    # Compute the gradient of the loss with respect to x
+    # compute the gradient of the loss with respect to x
     grad_x = softmax_probs.copy()
-    grad_x[np.arange(N), y] -= 1
-    grad_x /= N
+    grad_x[np.arange(n), y] -= 1
+    grad_x /= n
 
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -205,12 +189,7 @@ def l2_regularization(w, reg):
     # TODO: Implement L2 regularization.                                      #
     ###########################################################################
 
-    # Compute the squared norm of w
-    sqr_norm = np.square(w).sum()
-    # Compute the loss using the formula given above
-    loss = (reg/2)*sqr_norm
-
-    #loss = (reg/2) * np.sum(w ** 2)
+    loss = (reg/2) * np.sum(w ** 2)
 
     # Compute the gradient of the loss with respect to w
     grad_w = reg * w
