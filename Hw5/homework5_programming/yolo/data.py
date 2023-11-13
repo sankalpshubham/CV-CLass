@@ -83,6 +83,7 @@ class CrackerBox(data.Dataset):
 
         image = cv2.imread(img_file)
         image = cv2.resize(image, (self.yolo_image_size, self.yolo_image_size))
+        # try cv2.cvtcolor BRG2RGB instead of image [:, :, ::-1]
         image = image[:, :, ::-1].transpose((2, 0, 1)).astype(np.float32)       # BGR to RGB, HWC to CHW
         image = image / 255.0
         image -= self.pixel_mean.reshape((3, 1, 1))                                             # subtract pixel mean
