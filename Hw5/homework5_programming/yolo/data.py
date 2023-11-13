@@ -72,19 +72,10 @@ class CrackerBox(data.Dataset):
         img_idx = os.path.splitext(os.path.basename(filename_gt))[0]
         img_file = os.path.join(self.data_path, f'{img_idx[:-4]}.jpg')
 
-        print("-"*50)
-        print(filename_gt)
-        print(img_idx)
-        print(img_file)
-
-        print(self.pixel_mean)
-        print("-"*50)
-
-
         image = cv2.imread(img_file)
         image = cv2.resize(image, (self.yolo_image_size, self.yolo_image_size))
-        # try cv2.cvtcolor BRG2RGB instead of image [:, :, ::-1]
-        image = image[:, :, ::-1].transpose((2, 0, 1)).astype(np.float32)       # BGR to RGB, HWC to CHW
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = image.transpose((2, 0, 1)).astype(np.float32)       # HWC to CHW
         image = image / 255.0
         image -= self.pixel_mean.reshape((3, 1, 1))                                             # subtract pixel mean
         image_blob = torch.from_numpy(image)
@@ -110,12 +101,6 @@ class CrackerBox(data.Dataset):
         # creating ground truth mask
         gt_mask_blob = torch.zeros((self.yolo_grid_num, self.yolo_grid_num))
         gt_mask_blob[grid_y, grid_x] = 1
-
-
-        print("-"*50)
-        #print(img_idx)
-        print(bbox)
-        print("-"*50)
 
         # this is the sample dictionary to be returned from this function
         sample = {'image': image_blob,

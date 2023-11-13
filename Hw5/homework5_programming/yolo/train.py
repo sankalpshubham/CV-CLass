@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # hyper-parameters
     # you can tune these for your training
-    num_epochs = 100
+    num_epochs = 30
     batch_size = 2
     learning_rate = 1e-4
     num_workers = 2
@@ -92,13 +92,13 @@ if __name__ == '__main__':
             print('epoch %d/%d, iter %d/%d, lr %.6f, loss %.4f' % (epoch, num_epochs, i, epoch_size, learning_rate, loss))
             losses[epoch, i] = loss
 
-        '''
+        
         # save checkpoint for every epoch
         state = network.state_dict()
         filename = 'yolo_epoch_{:d}'.format(epoch+1) + '.checkpoint.pth'
         torch.save(state, os.path.join(output_dir, filename))
         print(filename)
-        '''
+        
         
     # save the final checkpoint
     state = network.state_dict()

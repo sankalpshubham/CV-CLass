@@ -38,6 +38,44 @@ class YOLO(nn.Module):
 
         ### ADD YOUR CODE HERE ###
         # hint: use the modules.add_module()
+        modules.add_module("conv_1", torch.nn.Conv2d(3, 16, 3, 1, 1))
+        modules.add_module("relu_1", torch.nn.ReLU())
+        modules.add_module("maxpool_1", torch.nn.MaxPool2d(2, 2))
+
+        modules.add_module("conv_2", torch.nn.Conv2d(16, 32, 3, 1, 1))
+        modules.add_module("relu_2", torch.nn.ReLU())
+        modules.add_module("maxpool_2", torch.nn.MaxPool2d(2, 2))
+
+        modules.add_module("conv_3", torch.nn.Conv2d(32, 64, 3, 1, 1))
+        modules.add_module("relu_3", torch.nn.ReLU())
+        modules.add_module("maxpool_3", torch.nn.MaxPool2d(2, 2))
+
+        modules.add_module("conv_4", torch.nn.Conv2d(64, 128, 3, 1, 1))
+        modules.add_module("relu_4", torch.nn.ReLU())
+        modules.add_module("maxpool_4", torch.nn.MaxPool2d(2, 2))
+
+        modules.add_module("conv_5", torch.nn.Conv2d(128, 256, 3, 1, 1))
+        modules.add_module("relu_5", torch.nn.ReLU())
+        modules.add_module("maxpool_5", torch.nn.MaxPool2d(2, 2))
+
+        modules.add_module("conv_6", torch.nn.Conv2d(256, 512, 3, 1, 1))
+        modules.add_module("relu_6", torch.nn.ReLU())
+        modules.add_module("maxpool_6", torch.nn.MaxPool2d(2, 2))
+
+        modules.add_module("conv_7", torch.nn.Conv2d(512, 1024, 3, 1, 1))
+        modules.add_module("relu_7", torch.nn.ReLU())
+        
+        modules.add_module("conv_8", torch.nn.Conv2d(1024, 1024, 3, 1, 1))
+        modules.add_module("relu_8", torch.nn.ReLU())
+
+        modules.add_module("conv_9", torch.nn.Conv2d(1024, 1024, 3, 1, 1))
+        modules.add_module("relu_9", torch.nn.ReLU())
+
+        modules.add_module("flatten", torch.nn.Flatten(1, -1))
+        modules.add_module("fc1", torch.nn.Linear(50176, 256, True))
+        modules.add_module("fc2", torch.nn.Linear(256, 256, True))
+        modules.add_module("output", torch.nn.Linear(256, 539, True))
+        modules.add_module("sigmoid", torch.nn.Sigmoid())
 
         return modules
 

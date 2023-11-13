@@ -5,6 +5,7 @@ Implement the compute_loss() function in this python script
 import os
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 # compute Intersection over Union (IoU) of two bounding boxes
@@ -97,6 +98,19 @@ def compute_loss(output, pred_box, gt_box, gt_mask, num_boxes, num_classes, grid
 
     ### ADD YOUR CODE HERE ###
     # Use weight_coord and weight_noobj defined above
+
+    noobj_box_mask = -1*(box_mask - 1)
+    noobj_box_mask = torch.abs (noobj_box_mask)
+
+    loss_noobj = weight_noobj * torch.sum( noobj_box_mask * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
+    loss_x = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,0] - output[:, 0:5*num_boxes:5], 2.0))
+    loss_y = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,1] - output[:, 1:5*num_boxes:5], 2.0))
+
+    loss_w = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,2]) -  torch.sqrt(output[:, 2:5*num_boxes:5]), 2.0))
+    loss_h = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,3]) -  torch.sqrt(output[:, 3:5*num_boxes:5]), 2.0))
+
+    loss_cls = torch.sum(torch.pow(gt_mask - output[:, 10], 2.0))
+
 
     # print('lx: %.4f, ly: %.4f, lw: %.4f, lh: %.4f, lobj: %.4f, lnoobj: %.4f, lcls: %.4f' % (loss_x, loss_y, loss_w, loss_h, loss_obj, loss_noobj, loss_cls))
 
