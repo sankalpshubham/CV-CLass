@@ -72,35 +72,76 @@ class CrackerBox(data.Dataset):
         img_idx = os.path.splitext(os.path.basename(filename_gt))[0]
         img_file = os.path.join(self.data_path, f'{img_idx[:-4]}.jpg')
 
-        image = cv2.imread(img_file)
-        image = cv2.resize(image, (self.yolo_image_size, self.yolo_image_size))
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = image.transpose((2, 0, 1)).astype(np.float32)       # HWC to CHW
-        image = image / 255.0
-        image -= self.pixel_mean.reshape((3, 1, 1))                                             # subtract pixel mean
-        image_blob = torch.from_numpy(image)
+        # image = cv2.imread(img_file)
+        # image = cv2.resize(image, (self.yolo_image_size, self.yolo_image_size))
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # image = image.transpose((2, 0, 1)).astype(np.float32)       # HWC to CHW
+        # image = image / 255.0
+        # image -= self.pixel_mean.reshape((3, 1, 1))                                             # subtract pixel mean
+        # image_blob = torch.from_numpy(image)
 
-        # load ground truth bounding boxes
-        with open(filename_gt, 'r') as file:
-            bbox = list(map(float, file.readline().split()))
+        # # load ground truth bounding boxes
+        # with open(filename_gt, 'r') as file:
+        #     bbox = list(map(float, file.readline().split()))
 
-        # calculating yolo format bounding boxes
-        cx = (bbox[0] + bbox[2]) / 2 / self.width
-        cy = (bbox[1] + bbox[3]) / 2 / self.height
-        w = abs(bbox[2] - bbox[0]) / self.width
-        h = abs(bbox[3] - bbox[1]) / self.height
-        gt_box_blob = torch.zeros((5, self.yolo_grid_num, self.yolo_grid_num))
+        # # calculating yolo format bounding boxes
+        # cx = (bbox[0] + bbox[2]) / 2 / self.width
+        # cy = (bbox[1] + bbox[3]) / 2 / self.height
+        # w = abs(bbox[2] - bbox[0]) / self.width
+        # h = abs(bbox[3] - bbox[1]) / self.height
+        # gt_box_blob = torch.zeros((5, self.yolo_grid_num, self.yolo_grid_num))
         
-        grid_x, grid_y = int(cx * self.yolo_grid_num), int(cy * self.yolo_grid_num)
-        gt_box_blob[0, grid_y, grid_x] = cx * self.yolo_grid_num - grid_x
-        gt_box_blob[1, grid_y, grid_x] = cy * self.yolo_grid_num - grid_y
-        gt_box_blob[2, grid_y, grid_x] = w
-        gt_box_blob[3, grid_y, grid_x] = h
-        gt_box_blob[4, grid_y, grid_x] = 1
+        # grid_x, grid_y = int(cx * self.yolo_grid_num), int(cy * self.yolo_grid_num)
+        # gt_box_blob[0, grid_y, grid_x] = cx * self.yolo_grid_num - grid_x
+        # gt_box_blob[1, grid_y, grid_x] = cy * self.yolo_grid_num - grid_y
+        # gt_box_blob[2, grid_y, grid_x] = w
+        # gt_box_blob[3, grid_y, grid_x] = h
+        # gt_box_blob[4, grid_y, grid_x] = 1
 
-        # creating ground truth mask
-        gt_mask_blob = torch.zeros((self.yolo_grid_num, self.yolo_grid_num))
-        gt_mask_blob[grid_y, grid_x] = 1
+        # # creating ground truth mask
+        # gt_mask_blob = torch.zeros((self.yolo_grid_num, self.yolo_grid_num))
+        # gt_mask_blob[grid_y, grid_x] = 1
+
+
+        # _____________________________________________________________
+        # imageblob 
+        image_blob = cv2.imread(img_file)
+        image_blob = cv2.resize(image_blob, (0, 0), fx=448/640, fy=448/480).astype('float32')
+        image_blob = (image_blob-self.pixel_mean)/255
+        image_blob = torch.FloatTensor(np.moveaxis(image_blob, 2, 0))
+        
+        # gt_box and gt_mask
+        gt_box_blob = np.zeros((5, 7, 7))
+        gt_mask_blob = np.zeros((7,7))
+
+        with open(filename_gt) as f:
+            for line in f:
+                # print(line)
+                x1,y1,x2,y2 = map(float,line.split(" "))
+                x1,y1,x2,y2 = map(float,line.split(" "))
+                x1 *= 448/640
+                x2 *= 448/640
+
+                y1 *= 448/480
+                y2 *= 448/480
+
+                cx = (x1+x2)/2
+                cy = (y1+y2)/2
+
+                w = x2-x1
+                h = y2-y1
+
+
+        # setting confidence pixels 1
+        for i in range(7):
+            for j in range(7):
+                gt_box_blob[:,i,j] = ((cx-(math.floor(cx/64)*64))/64, (cy-(math.floor(cy/64)*64))/64, w/448, h/448,1)
+        gt_mask_blob[math.floor(cy/64), math.floor(cx/64)] = 1
+            
+        gt_box_blob = torch.FloatTensor(gt_box_blob)
+        gt_mask_blob = torch.FloatTensor(gt_mask_blob)
+        # _____________________________________________________________
+        
 
         # this is the sample dictionary to be returned from this function
         sample = {'image': image_blob,

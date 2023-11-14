@@ -97,19 +97,94 @@ def compute_loss(output, pred_box, gt_box, gt_mask, num_boxes, num_classes, grid
     loss_obj = torch.sum(box_mask * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
 
     ### ADD YOUR CODE HERE ###
+
     # Use weight_coord and weight_noobj defined above
 
-    noobj_box_mask = -1*(box_mask - 1)
-    noobj_box_mask = torch.abs (noobj_box_mask)
+    # ____________________________
+    # noobj_box_mask = -1*(box_mask - 1)
+    # noobj_box_mask = torch.abs (noobj_box_mask)
 
-    loss_noobj = weight_noobj * torch.sum( noobj_box_mask * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
-    loss_x = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,0] - output[:, 0:5*num_boxes:5], 2.0))
-    loss_y = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,1] - output[:, 1:5*num_boxes:5], 2.0))
+    # loss_noobj = weight_noobj * torch.sum( noobj_box_mask * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
+    # loss_x = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,0] - output[:, 0:5*num_boxes:5], 2.0))
+    # loss_y = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,1] - output[:, 1:5*num_boxes:5], 2.0))
 
-    loss_w = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,2]) -  torch.sqrt(output[:, 2:5*num_boxes:5]), 2.0))
-    loss_h = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,3]) -  torch.sqrt(output[:, 3:5*num_boxes:5]), 2.0))
+    # loss_w = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,2]) -  torch.sqrt(output[:, 2:5*num_boxes:5]), 2.0))
+    # loss_h = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,3]) -  torch.sqrt(output[:, 3:5*num_boxes:5]), 2.0))
 
-    loss_cls = torch.sum(torch.pow(gt_mask - output[:, 10], 2.0))
+    # loss_cls = torch.sum(torch.pow(gt_mask - output[:, 10], 2.0))
+    # ____________________________
+
+
+    # ____________________________
+    # noobj_box_mask = -1*(box_mask - 1)
+    # noobj_box_mask = torch.abs (noobj_box_mask)
+
+    # loss_noobj = weight_noobj * torch.sum( noobj_box_mask * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
+    # loss_x = weight_coord * torch.sum(box_mask * torch.pow(gt_box[:,0:5 * num_boxes: 5] - output[:, 0:5*num_boxes:5], 2.0))
+    # loss_y = weight_coord * torch.sum(box_mask * torch.pow(gt_box[:,1:5 * num_boxes: 5] - output[:, 1:5*num_boxes:5], 2.0))
+
+    # loss_w = weight_coord * torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,2:5 * num_boxes: 5]) -  torch.sqrt(output[:, 2:5*num_boxes:5]), 2.0))
+    # loss_h = weight_coord * torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,3:5 * num_boxes: 5]) -  torch.sqrt(output[:, 3:5*num_boxes:5]), 2.0))
+
+    # loss_cls = torch.sum(torch.pow(gt_mask - output[:, 10], 2.0))
+    # ____________________________
+
+
+    # ______________________________________________________
+    # loss function on x
+    loss_x = weight_coord * torch.sum(box_mask * torch.pow((gt_box[:,0]) - output[:, 0:5*num_boxes:5], 2.0))
+    # loss function on y
+    loss_y = weight_coord * torch.sum(box_mask * torch.pow((gt_box[:,1]) - output[:, 1:5*num_boxes:5], 2.0))
+    # loss function on w
+    loss_w = weight_coord * torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,2]) - torch.sqrt(output[:, 2:5*num_boxes:5]), 2.0))
+    # loss function on h
+    loss_h = weight_coord * torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,3]) - torch.sqrt(output[:, 3:5*num_boxes:5]), 2.0))
+    
+    # # loss function on noobj class probabilities
+    # loss_noobj = weight_noobj * torch.sum(noobj_box_mask * torch.pow(gt_mask - output[:, 9:10*num_boxes:10], 2.0))
+
+    # loss function on noobj class probabilities
+    loss_noobj = weight_noobj * torch.sum((1 - box_mask) * torch.pow(box_confidence - output[:, 4+num_classes:5*num_boxes:5], 2.0))
+
+    # loss function on class probability
+    loss_cls = torch.sum(box_mask * torch.pow(gt_mask - output[:, 10], 2.0))
+
+
+    # ____________________________
+
+    # loss_obj = torch.sum(box_mask * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
+    # # AI GENERATED
+    # # Loss functions on coordinates
+    # loss_x = weight_coord * torch.sum(box_mask * torch.pow(gt_box - output[:, 4:5*num_boxes:5], 2.0))
+    # loss_y = weight_coord * torch.sum(box_mask * torch.pow(gt_box - output[:, 4:5*num_boxes:5], 2.0))
+    # loss_w = weight_coord * torch.sum(box_mask * torch.pow(gt_box - output[:, 4:5*num_boxes:5], 2.0))
+    # loss_h = weight_coord * torch.sum(box_mask * torch.pow(gt_box - output[:, 4:5*num_boxes:5], 2.0))
+
+    # # Loss function on confidence for non-objects
+    # loss_noobj = weight_noobj * torch.sum((1 - box_mask) * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
+
+    # # Loss function for object class?
+    # loss_cls = torch.sum(box_mask * torch.sum(F.cross_entropy(output[:, 5 * num_boxes:], gt_box[:, 4, :, :].long())))
+
+    # loss_cls = torch.sum(weight_noobj * torch.pow(gt_mask - output[:, 10], 2.0))
+
+    # loss_cls = torch.sum(torch.pow(gt_mask - output[:, 10], 2.0))
+    # ____________________________
+
+
+
+    # noobj_box_mask = -1*(box_mask - 1)
+    # noobj_box_mask = torch.abs (noobj_box_mask)
+
+    # loss_noobj = weight_noobj * torch.sum( noobj_box_mask * torch.pow(box_confidence - output[:, 4:5*num_boxes:5], 2.0))
+    # loss_x = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,0] - output[:, 0:5*num_boxes:5], 2.0))
+    # loss_y = weight_coord *torch.sum(box_mask * torch.pow(gt_box[:,1] - output[:, 1:5*num_boxes:5], 2.0))
+
+    # loss_w = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,2]) -  torch.sqrt(output[:, 2:5*num_boxes:5]), 2.0))
+    # loss_h = weight_coord *torch.sum(box_mask * torch.pow(torch.sqrt(gt_box[:,3]) -  torch.sqrt(output[:, 3:5*num_boxes:5]), 2.0))
+
+    # loss_cls = torch.sum(torch.pow(gt_mask - output[:, 10], 2.0))
+
 
 
     # print('lx: %.4f, ly: %.4f, lw: %.4f, lh: %.4f, lobj: %.4f, lnoobj: %.4f, lcls: %.4f' % (loss_x, loss_y, loss_w, loss_h, loss_obj, loss_noobj, loss_cls))
