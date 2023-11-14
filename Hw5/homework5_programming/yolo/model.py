@@ -92,7 +92,12 @@ class YOLO(nn.Module):
         corner_y = torch.unsqueeze(corner_y, dim=0)
         corners = torch.cat((corner_x, corner_y), dim=0)
         # corners are top-left corners for each cell in the grid
-        corners = corners.unsqueeze(0).repeat(batch_size, 1, 1, 1)
+        
+        # _____________________________________________________________________
+        #corners = corners.unsqueeze(0).repeat(batch_size, 1, 1, 1)
+        corners = corners.to(output.device).unsqueeze(0).repeat(batch_size, 1, 1, 1)
+        # _____________________________________________________________________
+
         pred_box = output.clone()
 
         # for each bounding box

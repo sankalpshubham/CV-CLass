@@ -37,6 +37,12 @@ def plot_losses(losses, filename='train_loss.pdf'):
 
 if __name__ == '__main__':
 
+    # _______________________________________
+    # Check if GPU is available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print("Using device:", device)  
+    # _______________________________________
+
     # hyper-parameters
     # you can tune these for your training
     num_epochs = 100
@@ -52,7 +58,10 @@ if __name__ == '__main__':
     # network
     num_classes = 1
     num_boxes = 2
-    network = YOLO(num_boxes, num_classes)
+    # _______________________________________
+    #network = YOLO(num_boxes, num_classes)
+    network = YOLO(num_boxes, num_classes).to(device)
+    # _______________________________________
     image_size = network.image_size
     grid_size = network.grid_size
     network.train()
@@ -73,10 +82,17 @@ if __name__ == '__main__':
 
         # for each sample
         for i, sample in enumerate(train_loader):
-        
-            image = sample['image']
-            gt_box = sample['gt_box']
-            gt_mask = sample['gt_mask']
+            
+            # _______________________________________
+            # image = sample['image']
+            # gt_box = sample['gt_box']
+            # gt_mask = sample['gt_mask']
+
+            image = sample['image'].to(device)
+            gt_box = sample['gt_box'].to(device)
+            gt_mask = sample['gt_mask'].to(device)
+
+            # _______________________________________
 
             # forward pass
             output, pred_box = network(image)
