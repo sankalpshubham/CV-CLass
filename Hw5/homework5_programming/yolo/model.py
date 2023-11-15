@@ -1,6 +1,7 @@
 """
 CS 4391 Homework 5 Programming
 Implement the create_modules() function in this python script
+Name: Sankalp Shubham (sxs190290)
 """
 import os
 import math
@@ -92,7 +93,7 @@ class YOLO(nn.Module):
         corner_y = torch.unsqueeze(corner_y, dim=0)
         corners = torch.cat((corner_x, corner_y), dim=0)
         # corners are top-left corners for each cell in the grid
-        
+
         # _____________________________________________________________________
         #corners = corners.unsqueeze(0).repeat(batch_size, 1, 1, 1)
         corners = corners.to(output.device).unsqueeze(0).repeat(batch_size, 1, 1, 1)

@@ -1,6 +1,7 @@
 """
 CS 4391 Homework 5 Programming
 Implement the compute_loss() function in this python script
+Name: Sankalp Shubham (sxs190290)
 """
 import os
 import torch
